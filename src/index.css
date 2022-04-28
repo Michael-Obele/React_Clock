@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.container {
+  width: 50vw;
+  height: auto;
+  margin: auto;
+}
+.click {
+  cursor: pointer;
+}
+.btn_space {
+  margin: 10px;
+}
+#break-length,
+#session-length {
+  user-select: none;
+}
+#circle {
+  border: 5px solid grey;
+  border-radius: 50%;
+  height: 230px;
+  width: 230px;
+  margin: auto;
+}
