@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 function App() {
   const [breakNum, setBreak] = useState(5);
   const [session, setSession] = useState(25);
-  const [second, setSecond] = useState(0);
+  const [time, setTime] = useState(session * 60);
   const [intervalId, setIntervalId] = useState(0);
   const [played, setPlayed] = useState(false);
+  function Time(t) {
+    var min = Math.floor(t / 60);
+    t = t - min * 60;
+    return [t, min];
+  }
+  const [second, setSecond] = useState(Time(time)[0]);
+  const [min, setMin] = useState(Time(time)[1]);
   const incBreak = () => {
     setBreak(breakNum + 1);
   };
@@ -19,8 +26,21 @@ function App() {
     setSession(session - 1);
   };
   switch (true) {
-    case second == 10:
-      clearInterval(intervalId);
+    case breakNum >= 61:
+      setBreak(60);
+      break;
+    case breakNum < 1:
+      setBreak(1);
+      break;
+    case session >= 61:
+      setSession(60);
+      break;
+    case session < 1:
+      setSession(1);
+      break;
+    case second < 0:
+      setSecond(59);
+      setMin((min) => min - 1);
       break;
     default:
       break;
@@ -28,16 +48,15 @@ function App() {
   const SecondHand = () => {
     if (intervalId) {
       clearInterval(intervalId);
-      setPlayed(false);
+      setPlayed(!played);
       setIntervalId(0);
-      console.log(intervalId);
       return;
     }
 
     const newIntervalId = setInterval(() => {
-      setSecond((second) => second + 1);
+      setSecond((second) => second - 1);
     }, 1000);
-    setPlayed(true);
+    setPlayed(!played);
     setIntervalId(newIntervalId);
     return second;
   };
@@ -96,7 +115,10 @@ function App() {
         </div>
         <section id='circle' className='text-center'>
           <h3 id='timer-label'>Timer</h3>
-          <h4>{second}</h4>
+          <div className='mx-auto hstack gap-1' style={{ width: '30%' }}>
+            <h4>{min < 10 ? '0' + min : min}:</h4>
+            <h4>{second < 10 ? '0' + second : second}</h4>
+          </div>
           <span onClick={SecondHand}>
             {played ? (
               <i class='fa-solid fa-circle-pause'></i>
