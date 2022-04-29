@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 
 function App() {
+  const [second, setSecond] = useState(1500);
+  const [breakTime, setBreakTime] = useState(false);
+  const [text, setText] = useState('Session');
   const [breakNum, setBreak] = useState(5);
   const [session, setSession] = useState(25);
-  const [time, setTime] = useState(session * 60);
   const [intervalId, setIntervalId] = useState(0);
   const [played, setPlayed] = useState(false);
   function Time(t) {
+    // t = t * 60;
     var min = Math.floor(t / 60);
     t = t - min * 60;
-    return [t, min];
+    return `${min < 10 ? '0' + min : min}:${t < 10 ? '0' + t : t}`;
   }
-  const [second, setSecond] = useState(Time(time)[0]);
-  const [min, setMin] = useState(Time(time)[1]);
+
   const incBreak = () => {
     setBreak(breakNum + 1);
   };
@@ -21,9 +23,20 @@ function App() {
   };
   const incSec = () => {
     setSession(session + 1);
+    setSecond(second + 60);
   };
   const decSec = () => {
     setSession(session - 1);
+    setSecond(second - 60);
+  };
+  const reset = () => {
+    setBreak(5);
+    setSession(25);
+    setSecond(1500);
+    setBreakTime(false);
+    setText('Session');
+    clearInterval(intervalId);
+    setPlayed(false);
   };
   switch (true) {
     case breakNum >= 61:
@@ -37,10 +50,20 @@ function App() {
       break;
     case session < 1:
       setSession(1);
+      setSecond(60);
       break;
     case second < 0:
-      setSecond(59);
-      setMin((min) => min - 1);
+      const Break = () => {
+        setBreakTime(false);
+        setSecond(breakNum * 60);
+        setText('Break');
+      };
+      const Session = () => {
+        setBreakTime(true);
+        setSecond(session * 60);
+        setText('Session');
+      };
+      breakTime ? Break() : Session();
       break;
     default:
       break;
@@ -48,7 +71,7 @@ function App() {
   const SecondHand = () => {
     if (intervalId) {
       clearInterval(intervalId);
-      setPlayed(!played);
+      setPlayed(false);
       setIntervalId(0);
       return;
     }
@@ -56,7 +79,7 @@ function App() {
     const newIntervalId = setInterval(() => {
       setSecond((second) => second - 1);
     }, 1000);
-    setPlayed(!played);
+    setPlayed(true);
     setIntervalId(newIntervalId);
     return second;
   };
@@ -70,7 +93,7 @@ function App() {
             <h3 id='break-label'>Break Length</h3>
             <div className='btn_space'>
               <span
-                onClick={incBreak}
+                onClick={played ? '' : incBreak}
                 className=' btn_space click'
                 id='break-increment'
               >
@@ -80,7 +103,7 @@ function App() {
                 {breakNum}
               </span>
               <span
-                onClick={decBreak}
+                onClick={played ? '' : decBreak}
                 className='click btn_space'
                 id='break-decrement'
               >
@@ -94,7 +117,7 @@ function App() {
             </h3>
             <div className=''>
               <span
-                onClick={incSec}
+                onClick={played ? '' : incSec}
                 className='click btn_space'
                 id='session-increment'
               >
@@ -104,7 +127,7 @@ function App() {
                 {session}
               </span>
               <span
-                onClick={decSec}
+                onClick={played ? '' : decSec}
                 className='click btn_space'
                 id='session-decrement'
               >
@@ -114,18 +137,22 @@ function App() {
           </div>
         </div>
         <section id='circle' className='text-center'>
-          <h3 id='timer-label'>Timer</h3>
+          <h3 id='timer-label'>{text}</h3>
           <div className='mx-auto hstack gap-1' style={{ width: '30%' }}>
-            <h4>{min < 10 ? '0' + min : min}:</h4>
-            <h4>{second < 10 ? '0' + second : second}</h4>
+            <h4 id='time-left'>{Time(second)}</h4>
           </div>
-          <span onClick={SecondHand}>
-            {played ? (
-              <i class='fa-solid fa-circle-pause'></i>
-            ) : (
-              <i class='fa-solid fa-circle-play'></i>
-            )}
-          </span>
+          <section id='btns'>
+            <span onClick={SecondHand} id='start_stop'>
+              {played ? (
+                <i class='fa-solid fa-circle-pause'></i>
+              ) : (
+                <i class='fa-solid fa-circle-play'></i>
+              )}
+            </span>
+            <span id='reset' onClick={reset}>
+              <i class='fa-solid fa-rotate'></i>
+            </span>
+          </section>
         </section>
       </div>
     </div>
