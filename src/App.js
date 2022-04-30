@@ -29,15 +29,7 @@ function App() {
     setSession(session - 1);
     setSecond(second - 60);
   };
-  const reset = () => {
-    setBreak(5);
-    setSession(25);
-    setSecond(1500);
-    setBreakTime(false);
-    setText('Session');
-    clearInterval(intervalId);
-    setPlayed(false);
-  };
+
   switch (true) {
     case breakNum >= 61:
       setBreak(60);
@@ -54,26 +46,26 @@ function App() {
       break;
     case second < 0:
       const Break = () => {
-        setBreakTime(false);
+        setBreakTime(true);
         setSecond(breakNum * 60);
         setText('Break');
       };
       const Session = () => {
-        setBreakTime(true);
+        setBreakTime(false);
         setSecond(session * 60);
         setText('Session');
       };
-      breakTime ? Break() : Session();
+      breakTime ? Session() : Break();
       break;
     default:
       break;
   }
   const SecondHand = () => {
     if (intervalId) {
+      setIntervalId(0);
       clearInterval(intervalId);
       setPlayed(false);
-      setIntervalId(0);
-      return;
+      return 0;
     }
 
     const newIntervalId = setInterval(() => {
@@ -84,9 +76,20 @@ function App() {
     return second;
   };
 
+  const reset = () => {
+    setBreak(5);
+    setSession(25);
+    setSecond(1500);
+    setBreakTime(false);
+    setText('Session');
+    setIntervalId(0);
+    clearInterval(intervalId);
+    setPlayed(false);
+  };
+
   return (
     <div>
-      <h1 className='text-center'>25+5 Clock</h1>
+      <h1 className='text-center fs-1'>25+5 Clock</h1>
       <div className='container'>
         <div class='row align-items-start'>
           <div className='col text-center'>
@@ -142,7 +145,7 @@ function App() {
             <h4 id='time-left'>{Time(second)}</h4>
           </div>
           <section id='btns'>
-            <span onClick={SecondHand} id='start_stop'>
+            <span id='start_stop' onClick={SecondHand}>
               {played ? (
                 <i class='fa-solid fa-circle-pause'></i>
               ) : (
