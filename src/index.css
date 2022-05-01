@@ -34,13 +34,22 @@ code {
 #circle {
   border: 5px solid grey;
   border-radius: 50%;
-  padding: 3vh 0;
+  padding: 5vh 0 0;
   height: 230px;
   width: 230px;
   margin: 12px auto;
 }
+#btns {
+  margin: 20px;
+}
 #time-left {
-  margin: 12px 0;
+  font-size: 30px;
+  text-align: center;
+  justify-content: center;
+  justify-items: center;
+  justify-self: center;
+
+  margin: 12px auto;
 }
 #reset,
 #start_stop {

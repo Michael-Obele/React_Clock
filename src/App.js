@@ -162,8 +162,15 @@ function App() {
         </div>
         <section id='circle' className='text-center'>
           <h3 id='timer-label'>{text}</h3>
-          <div className='mx-auto hstack gap-1' style={{ width: '30%' }}>
-            <h4 id='time-left' style={second < 60 ? { color: 'red' } : {}}>
+          <div
+            className='mx-auto hstack gap-1 text-center'
+            style={{ width: '30%' }}
+          >
+            <h4
+              id='time-left'
+              className='text-center'
+              style={second < 60 ? { color: 'red' } : {}}
+            >
               {Time(second)}
             </h4>
           </div>
