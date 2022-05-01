@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 function App() {
-  const [second, setSecond] = useState(1500);
   const [breakTime, setBreakTime] = useState(false);
   const [text, setText] = useState('Session');
   const [breakNum, setBreak] = useState(5);
   const [session, setSession] = useState(25);
+  const [second, setSecond] = useState(1500);
   const [intervalId, setIntervalId] = useState(0);
   const [played, setPlayed] = useState(false);
+  const beepSound = useRef();
   function Time(t) {
-    // t = t * 60;
     var min = Math.floor(t / 60);
     t = t - min * 60;
     return `${min < 10 ? '0' + min : min}:${t < 10 ? '0' + t : t}`;
@@ -17,17 +17,35 @@ function App() {
 
   const incBreak = () => {
     setBreak(breakNum + 1);
+    if (breakTime) {
+      if (breakNum < 60) {
+        setSecond((breakNum + 1) * 60);
+      }
+    }
   };
   const decBreak = () => {
     setBreak(breakNum - 1);
+    if (breakTime) {
+      if (breakNum > 1) {
+        setSecond((breakNum - 1) * 60);
+      }
+    }
   };
   const incSec = () => {
     setSession(session + 1);
-    setSecond(second + 60);
+    if (!breakTime) {
+      if (session < 60) {
+        setSecond((session + 1) * 60);
+      }
+    }
   };
   const decSec = () => {
     setSession(session - 1);
-    setSecond(second - 60);
+    if (!breakTime) {
+      if (session > 1) {
+        setSecond((session - 1) * 60);
+      }
+    }
   };
 
   switch (true) {
@@ -42,7 +60,6 @@ function App() {
       break;
     case session < 1:
       setSession(1);
-      setSecond(60);
       break;
     case second < 0:
       const Break = () => {
@@ -57,6 +74,9 @@ function App() {
       };
       breakTime ? Session() : Break();
       break;
+    case second === 0:
+      beepSound.current.play();
+      break;
     default:
       break;
   }
@@ -70,14 +90,15 @@ function App() {
 
     const newIntervalId = setInterval(() => {
       setSecond((second) => second - 1);
-    }, 1000);
+    }, 100);
     setPlayed(true);
     setIntervalId(newIntervalId);
     return second;
   };
-
   const reset = () => {
     setBreak(5);
+    beepSound.current.pause();
+    beepSound.current.load();
     setSession(25);
     setSecond(1500);
     setBreakTime(false);
@@ -91,7 +112,7 @@ function App() {
     <div>
       <h1 className='text-center fs-1'>25+5 Clock</h1>
       <div className='container'>
-        <div class='row align-items-start'>
+        <div className='row align-items-start'>
           <div className='col text-center'>
             <h3 id='break-label'>Break Length</h3>
             <div className='btn_space'>
@@ -100,7 +121,7 @@ function App() {
                 className=' btn_space click'
                 id='break-increment'
               >
-                <i class='fa-solid fa-plus'></i>
+                <i className='fa-solid fa-plus'></i>
               </span>
               <span id='break-length' className='fs-4 btn_space'>
                 {breakNum}
@@ -110,7 +131,7 @@ function App() {
                 className='click btn_space'
                 id='break-decrement'
               >
-                <i class='fa-solid fa-minus'></i>
+                <i className='fa-solid fa-minus'></i>
               </span>
             </div>
           </div>
@@ -124,7 +145,7 @@ function App() {
                 className='click btn_space'
                 id='session-increment'
               >
-                <i class='fa-solid fa-plus'></i>
+                <i className='fa-solid fa-plus'></i>
               </span>
               <span id='session-length' className='fs-4 btn_space'>
                 {session}
@@ -134,7 +155,7 @@ function App() {
                 className='click btn_space'
                 id='session-decrement'
               >
-                <i class='fa-solid fa-minus'></i>
+                <i className='fa-solid fa-minus'></i>
               </span>
             </div>
           </div>
@@ -142,22 +163,30 @@ function App() {
         <section id='circle' className='text-center'>
           <h3 id='timer-label'>{text}</h3>
           <div className='mx-auto hstack gap-1' style={{ width: '30%' }}>
-            <h4 id='time-left'>{Time(second)}</h4>
+            <h4 id='time-left' style={second < 60 ? { color: 'red' } : {}}>
+              {Time(second)}
+            </h4>
           </div>
           <section id='btns'>
             <span id='start_stop' onClick={SecondHand}>
               {played ? (
-                <i class='fa-solid fa-circle-pause'></i>
+                <i className='fa-solid fa-circle-pause'></i>
               ) : (
-                <i class='fa-solid fa-circle-play'></i>
+                <i className='fa-solid fa-circle-play'></i>
               )}
             </span>
             <span id='reset' onClick={reset}>
-              <i class='fa-solid fa-rotate'></i>
+              <i className='fa-solid fa-rotate'></i>
             </span>
           </section>
         </section>
       </div>
+      <audio
+        id='beep'
+        preload='auto'
+        ref={beepSound}
+        src='https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav'
+      />
     </div>
   );
 }
