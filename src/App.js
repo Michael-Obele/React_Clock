@@ -110,10 +110,10 @@ function App() {
 
   return (
     <div>
-      <h1 className='text-center fs-1'>25+5 Clock</h1>
+      <h1 className='text-center fs-1 title'>25+5 Clock</h1>
       <div className='container'>
         <div className='row align-items-start'>
-          <div className='col text-center'>
+          <div className='col-lg text-center'>
             <h3 id='break-label'>Break Length</h3>
             <div className='btn_space'>
               <span
@@ -135,7 +135,7 @@ function App() {
               </span>
             </div>
           </div>
-          <div className='col text-center'>
+          <div className='col-lg text-center'>
             <h3 id='session-label' className=''>
               Session Length
             </h3>
